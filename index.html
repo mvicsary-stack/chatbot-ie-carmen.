@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#173D69">
+  <meta name="description" content="Asistente virtual de la IE Nuestra Señora del Carmen, Cartagena, Bolívar.">
+  <title>Asistente Virtual | IE Nuestra Señora del Carmen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header class="encabezado">
+    <img
+      src="logo.png"
+      alt="Escudo de la IE Nuestra Señora del Carmen"
+      class="logo"
+    >
+    <h1>IE NUESTRA SEÑORA DEL CARMEN</h1>
+    <p>Asistente virtual de atención al usuario</p>
+    <span class="linea-dorada"></span>
+  </header>
+
+  <main class="contenedor">
+    <section class="presentacion">
+      <h2>Bienvenido a nuestra institución</h2>
+      <p>
+        Estamos aquí para orientarte. Selecciona una opción
+        para consultar información de interés.
+      </p>
+    </section>
+
+    <section class="chat" aria-label="Chat de atención al usuario">
+      <div class="chat-cabecera">
+        <span class="indicador"></span>
+        <div>
+          <strong>Asistente virtual</strong>
+          <small>Atención informativa</small>
+        </div>
+      </div>
+
+      <div
+        id="mensajes"
+        class="mensajes"
+        aria-live="polite"
+        aria-relevant="additions"
+      ></div>
+
+      <div id="opciones" class="opciones"></div>
+    </section>
+
+    <button id="reiniciar" class="reiniciar" type="button">
+      ↻ Volver al menú principal
+    </button>
+
+    <section class="informacion">
+      <h2>Información institucional</h2>
+      <p><strong>Ubicación:</strong> Cartagena, Bolívar</p>
+      <p><strong>Horario:</strong> lunes a viernes, 7:00 a. m. a 5:00 p. m.</p>
+      <p>
+        <strong>Página oficial:</strong>
+        <a href="https://nuestrasenoradelcarmen.edu.co/"
+           target="_blank" rel="noopener noreferrer">
+          Visitar sitio web
+        </a>
+      </p>
+      <p><strong>Teléfono y correo:</strong> pendientes de confirmar.</p>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <p>IE Nuestra Señora del Carmen · Cartagena, Bolívar</p>
+    <p>Asistente virtual de información institucional</p>
+  </footer>
+
+  <script>
+    const menu = [
+      ["📚 Información de matrículas", "matriculas"],
+      ["📋 Requisitos de inscripción", "requisitos"],
+      ["🕒 Horarios de atención", "horarios"],
+      ["🎓 Información académica", "academica"],
+      ["📍 Ubicación y contacto", "contacto"],
+      ["👩‍💼 Atención por un funcionario", "funcionario"]
+    ];
+
+    const respuestas = {
+      matriculas:
+        "La información oficial sobre fechas y cupos de matrícula está pendiente de confirmar. Consulta la página institucional o contacta a la secretaría escolar.",
+
+      requisitos:
+        "Los requisitos pueden variar según el grado. Confirma la lista oficial de documentos con la secretaría antes de realizar la inscripción.",
+
+      horarios:
+        "El horario de atención informado es de lunes a viernes, de 7:00 a. m. a 5:00 p. m. Confirma posibles cambios con la institución.",
+
+      academica:
+        "Para consultar información académica, actividades y calendario escolar, visita la página oficial de la institución.",
+
+      contacto:
+        "La institución está ubicada en Cartagena, Bolívar. El teléfono y el correo están pendientes de confirmar. Puedes consultar su sitio web oficial.",
+
+      funcionario:
+        "Para atención personalizada, comunícate con la secretaría o el área administrativa durante el horario de atención. Los datos de contacto están pendientes de confirmar."
+    };
+
+    const mensajes = document.getElementById("mensajes");
+    const opciones = document.getElementById("opciones");
+
+    function agregarMensaje(texto, tipo) {
+      const mensaje = document.createElement("div");
+      mensaje.className = "mensaje " + tipo;
+      mensaje.textContent = texto;
+      mensajes.appendChild(mensaje);
+      mensajes.scrollTop = mensajes.scrollHeight;
+    }
+
+    function mostrarMenu() {
+      opciones.replaceChildren();
+
+      menu.forEach(([etiqueta, clave]) => {
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.className = "opcion";
+        boton.textContent = etiqueta;
+
+        boton.addEventListener("click", () => {
+          agregarMensaje(etiqueta, "usuario");
+          agregarMensaje(respuestas[clave], "bot");
+
+          if (clave === "contacto" || clave === "academica") {
+            const enlace = document.createElement("a");
+            enlace.href = "https://nuestrasenoradelcarmen.edu.co/";
+            enlace.target = "_blank";
+            enlace.rel = "noopener noreferrer";
+            enlace.className = "enlace-web";
+            enlace.textContent = "Visitar página oficial";
+            mensajes.appendChild(enlace);
+          }
+
+          opciones.replaceChildren();
+
+          const volver = document.createElement("button");
+          volver.type = "button";
+          volver.className = "opcion";
+          volver.textContent = "⬅ Volver al menú";
+
+          volver.addEventListener("click", () => {
+            agregarMensaje("Volver al menú principal", "usuario");
+            agregarMensaje(
+              "Con gusto. ¿Qué otra información necesitas?",
+              "bot"
+            );
+            mostrarMenu();
+          });
+
+          opciones.appendChild(volver);
+          mensajes.scrollTop = mensajes.scrollHeight;
+        });
+
+        opciones.appendChild(boton);
+      });
+    }
+
+    function iniciarChat() {
+      mensajes.replaceChildren();
+
+      agregarMensaje(
+        "¡Hola! 👋 Bienvenido(a) a la IE Nuestra Señora del Carmen. Soy el asistente virtual. Selecciona una opción para comenzar. No compartas información personal sensible por este chat.",
+        "bot"
+      );
+
+      mostrarMenu();
+    }
+
+    document.getElementById("reiniciar").addEventListener(
+      "click",
+      iniciarChat
+    );
+
+    iniciarChat();
+  </script>
+</body>
+</html>
